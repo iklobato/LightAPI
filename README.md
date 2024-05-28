@@ -1,4 +1,6 @@
 
+[![Upload Python Package](https://github.com/henriqueblobato/LightAPI/actions/workflows/python-publish.yml/badge.svg)](https://github.com/henriqueblobato/LightAPI/actions/workflows/python-publish.yml)
+
 # LightApi
 
 ## What is LightApi?
