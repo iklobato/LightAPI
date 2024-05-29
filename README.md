@@ -14,10 +14,9 @@ LightAPI is a lightweight framework designed for quickly building API endpoints 
 ## How it Works
 LightAPI uses the following components to create API endpoints:
 - **SQLAlchemy**: For defining database models and interacting with the database.
-- **aiohttp**: For handling HTTP requests and routing.
-- **Logging**: For logging important operations and errors during API execution.
+- **aiohttp**: For handling async HTTP requests and routing.
 
-## Importing LightAPI
+## Using LightAPI
 To use LightAPI in your project, simply import the `LightApi` class and create an instance of it. Then, register your database models and start the API server. Here's a basic example:
 
 ```python
@@ -38,6 +37,8 @@ if __name__ == '__main__':
     app.register({'/person': Person})
     app.run()
 ```
+
+In summary, this code sets up a basic RESTful API using the LightApi framework, defines a single SQLAlchemy model (`Person`), and associates it with the `/person` endpoint for performing CRUD operations on the `Person` table in the database.
 
 This will create all RESTful endpoints for the `Person` model, allowing you to perform CRUD operations on the `person` table in your database.
 
