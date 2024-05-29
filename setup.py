@@ -16,6 +16,10 @@ setup(
     author_email='iklobato1@gmail.com',
     url='https://github.com/henriqueblobato/LightApi',
     packages=find_packages(),
+    install_requires=[
+        'SQLAlchemy==2.0.30',
+        'aiohttp==3.9.5',
+    ],
     classifiers=[
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: MIT License',

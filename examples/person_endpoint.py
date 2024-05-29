@@ -1,34 +1,16 @@
-import logging
+from sqlalchemy import Column, Integer, String
+from database import CustomBase
 from lightapi import LightApi
-from dataclasses import dataclass
-from typing import Optional
-
-from lightapi.handlers import BaseModel
 
 
-@dataclass
-class PersonEndpoint(BaseModel):
-    name: str
-    age: int
-    email: Optional[str] = None
-
-
-@dataclass
-class CompanyEndpoint(BaseModel):
-    name: str
-    address: str
-    phone: str
-    email: Optional[str] = None
+class Person(CustomBase):
+    pk = Column(Integer, primary_key=True, autoincrement=True, unique=True)
+    name = Column(String)
+    email = Column(String, unique=True)
 
 
 if __name__ == '__main__':
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format='%(asctime)s - %(levelname)s - %(message)s',
-        handlers=[logging.StreamHandler()]
-    )
 
     app = LightApi()
-    app.endpoint(PersonEndpoint)
-    app.endpoint(CompanyEndpoint)
-    app.run(host='0.0.0.0', port=8000)
+    app.register({'/person': Person})
+    app.run()
