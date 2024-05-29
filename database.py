@@ -16,7 +16,6 @@ Base = declarative_base()
 
 @as_declarative()
 class CustomBase:
-
     def __init__(self):
         self.__table__ = None
 

@@ -5,7 +5,6 @@ from http.server import BaseHTTPRequestHandler
 
 
 class Endpoint:
-
     def as_dict(self):
         return asdict(self)
 
@@ -27,7 +26,6 @@ class MultiEndpointHandlerSingleton(type):
 
 
 class Handler(BaseHTTPRequestHandler, metaclass=MultiEndpointHandlerSingleton):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
