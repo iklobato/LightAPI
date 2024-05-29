@@ -53,6 +53,28 @@ This will create all RESTful endpoints for the `Person` model, allowing you to p
 | OPTIONS  | /person            | Retrieve information about the `person` endpoint.    |
 | HEAD     | /person            | Retrieve the headers for the `person` endpoint.      |
 
+## Databases compatibility
+LightAPI is compatible with the following databases:
+
+- **SQLite**: A self-contained, serverless, zero-configuration SQL database engine.
+- **PostgreSQL**: An advanced open-source SQL database system known for its robustness and features.
+- **MySQL & MariaDB**: Both MySQL and MariaDB are popular open-source relational database management systems, and SQLAlchemy supports them interchangeably due to their similarity.
+- **Oracle**: A powerful commercial relational database management system widely used in enterprise environments.
+- **MS-SQL**: Microsoft SQL Server, a relational database management system developed by Microsoft.
+
+LightAPI uses SQLAlchemy as an ORM to interact with these databases, providing a consistent interface for defining models and performing CRUD operations across different database systems.
+
+## Connecting to DB
+To connect to a database, you need to provide the database URL in the `DATABASE_URL` environment variable. LightAPI will automatically connect to the database using the URL provided.
+```python
+os.environ['DATABASE_URL'] = "postgresql://user:password@postgresserver/db"
+
+if __name__ == '__main__':
+    app = LightApi()
+    app.register({'/person': Person})
+    app.run()
+```
+If no `DATABASE_URL` is provided, LightAPI will default to using an in-memory SQLite database for local development.
 
 ## Why LightAPI?
 LightAPI is designed to streamline the process of building API endpoints, allowing developers to focus on defining their models and business logic without getting bogged down in the details of request handling and routing. With its simple and intuitive interface, LightAPI enables faster API development, making it ideal for prototyping, small projects, or situations where speed is of the essence.

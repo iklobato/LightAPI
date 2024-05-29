@@ -1,9 +1,10 @@
+import os
+
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base, as_declarative
 from sqlalchemy.orm import sessionmaker, declared_attr
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./lightapi.db"
-# SQLALCHEMY_DATABASE_URL = "postgresql://user:password@postgresserver/db"
+SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./lightapi.db")
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
