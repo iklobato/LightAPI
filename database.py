@@ -1,23 +1,22 @@
 import os
+from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy.ext.declarative import as_declarative, declared_attr
+from sqlalchemy.orm import sessionmaker
 
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base, as_declarative
-from sqlalchemy.orm import sessionmaker, declared_attr
+# Retrieve database URL from environment variables or use default
 
-SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./lightapi.db")
+SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "oracle+oracledb://user:pass@hostname:port/?service_name=<service>")
 
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
-)
+# Create the SQLAlchemy engine
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
+
+# Create a configured "Session" class
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-Base = declarative_base()
-
-
+# Create a base class for declarative class definitions
 @as_declarative()
 class CustomBase:
-    def __init__(self):
-        self.__table__ = None
+    id = Column(Integer, primary_key=True, autoincrement=True)
 
     @declared_attr
     def __tablename__(cls) -> str:
@@ -25,3 +24,4 @@ class CustomBase:
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
