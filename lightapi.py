@@ -1,4 +1,6 @@
-from database import engine, CustomBase
+from sqlalchemy.exc import SQLAlchemyError
+
+from database import engine, Base
 
 import logging
 from aiohttp import web
@@ -27,11 +29,15 @@ class LightApi:
     def __init__(self):
         self.app = web.Application()
         self.routes = []
+        try:
+            Base.metadata.create_all(bind=engine)
+            logging.info(f"Tables successfully created and connected to {engine.url}")
+        except SQLAlchemyError as e:
+            logging.error(f"Error creating tables: {e}")
 
     def register(self, models: dict):
         for path, model in models.items():
             self.routes.extend(create_handler(model))
-        CustomBase.metadata.create_all(bind=engine)
 
     def run(self, host='0.0.0.0', port=8000):
         self.app.add_routes(self.routes)
