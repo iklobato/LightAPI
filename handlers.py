@@ -5,7 +5,6 @@ from sqlalchemy.orm import Session
 from aiohttp import web
 
 
-
 def create_handler(model: Base):
     return [
         web.post(f'/{model.__tablename__}/', CreateHandler(model)),
