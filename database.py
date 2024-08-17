@@ -45,8 +45,8 @@ class Base:
             str: The generated table name.
         """
         return cls.__name__.lower()
-
-    def as_dict(self):
+    
+    def serialize(self) -> dict:
         """
         Converts the model instance into a dictionary representation.
         

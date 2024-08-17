@@ -9,6 +9,10 @@ class Person(Base):
     email = Column(String, unique=True)
     email_verified = Column(Boolean, default=False)
 
+    def serialize(self) -> dict:
+        data = super().serialize()
+        return {'data': data}
+
 
 class Company(Base):
     name = Column(String)
@@ -21,3 +25,4 @@ if __name__ == '__main__':
     app.register({'/person': Person})
     app.register({'/company': Company})
     app.run()
+

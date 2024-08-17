@@ -50,7 +50,7 @@ class AbstractHandler(ABC):
         db.commit()
 
     def json_response(self, item, status=200):
-        return web.json_response(item.as_dict(), status=status)
+        return web.json_response(item.serialize(), status=status)
 
     def json_error_response(self, error_message, status=404):
         return web.json_response({'error': error_message}, status=status)
@@ -68,7 +68,7 @@ class ReadHandler(AbstractHandler):
     async def handle(self, db, request):
         if 'id' not in request.match_info:
             items = db.query(self.model).all()
-            response = [item.as_dict() for item in items]
+            response = [item.serialize() for item in items]
             return self.json_response(response, status=200)
         else:
             item_id = int(request.match_info['id'])
@@ -123,7 +123,7 @@ class DeleteHandler(AbstractHandler):
 class RetrieveAllHandler(AbstractHandler):
     async def handle(self, db, request):
         items = db.query(self.model).all()
-        response = [item.as_dict() for item in items]
+        response = [item.serialize() for item in items]
         return web.json_response(response, status=200)
 
 
