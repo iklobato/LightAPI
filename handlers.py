@@ -1,13 +1,12 @@
-import logging
 from abc import abstractmethod, ABC
 from dataclasses import dataclass, field
-
+from database import Base, SessionLocal
 from sqlalchemy.orm import Session
-from database import SessionLocal, CustomBase
 from aiohttp import web
 
 
-def create_handler(model: CustomBase):
+
+def create_handler(model: Base):
     return [
         web.post(f'/{model.__tablename__}/', CreateHandler(model)),
         web.get(f'/{model.__tablename__}/', RetrieveAllHandler(model)),
@@ -22,7 +21,7 @@ def create_handler(model: CustomBase):
 
 @dataclass
 class AbstractHandler(ABC):
-    model: CustomBase = field(default=None)
+    model: Base = field(default=None)
 
     @abstractmethod
     async def handle(self, db: Session, request: web.Request):
@@ -153,3 +152,4 @@ class HeadHandler(AbstractHandler):
         return web.Response(
             status=200, headers={'Content-Type': 'application/json'}
         )
+
