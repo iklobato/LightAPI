@@ -40,7 +40,8 @@ LightAPI automatically generates the following endpoints for each model:
 LightAPI supports the following databases:
 - SQLite
 - PostgreSQL
-- MySQL and MariaDB
+- MySQL
+- MariaDB
 - Oracle
 - MS-SQL
 
