@@ -148,7 +148,4 @@ class OptionsHandler(AbstractHandler):
 
 class HeadHandler(AbstractHandler):
     async def handle(self, db, request):
-        return web.Response(
-            status=200, headers={'Content-Type': 'application/json'}
-        )
-
+        return web.Response(status=200, headers={'Content-Type': 'application/json'})
