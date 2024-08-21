@@ -1,6 +1,6 @@
 from sqlalchemy.exc import SQLAlchemyError
 
-from database import engine, Base
+from lightapi.database import engine, Base
 
 import logging
 from aiohttp import web

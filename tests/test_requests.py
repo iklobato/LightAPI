@@ -3,8 +3,8 @@ from unittest.mock import MagicMock, patch
 from aiohttp import web
 from aiohttp.test_utils import AioHTTPTestCase, unittest_run_loop
 from sqlalchemy.orm import Session
-from handlers import CreateHandler, ReadHandler, UpdateHandler, DeleteHandler, PatchHandler, RetrieveAllHandler, OptionsHandler, HeadHandler
-from models import Person
+from lightapi.handlers import CreateHandler, ReadHandler, UpdateHandler, DeleteHandler, PatchHandler, RetrieveAllHandler, OptionsHandler, HeadHandler
+from lightapi.models import Person
 
 
 class TestHandlers(AioHTTPTestCase):

@@ -19,8 +19,8 @@ Import the LightApi class, define your models using SQLAlchemy, and create an in
 ## Example Usage:
 ```python
 from sqlalchemy import Column, Integer, String, Boolean
-from database import Base
 from lightapi import LightApi
+from lightapi.database import Base
 
 class Person(Base):
     name = Column(String)

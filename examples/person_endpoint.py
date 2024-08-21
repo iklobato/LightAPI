@@ -1,5 +1,5 @@
 from lightapi import LightApi
-from database import Base
+from lightapi.database import Base
 
 from sqlalchemy import Column, String, Boolean
 

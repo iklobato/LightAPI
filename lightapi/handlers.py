@@ -1,6 +1,6 @@
 from abc import abstractmethod, ABC
 from dataclasses import dataclass, field
-from database import Base, SessionLocal
+from lightapi.database import Base, SessionLocal
 from sqlalchemy.orm import Session
 from aiohttp import web
 
