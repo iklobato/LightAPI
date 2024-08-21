@@ -1,11 +1,11 @@
 from sqlalchemy.exc import SQLAlchemyError
 
 from lightapi.database import engine, Base
+from lightapi.handlers import create_handler
 
 import logging
 from aiohttp import web
 
-from handlers import create_handler
 
 logging.basicConfig(
     level=logging.INFO,
