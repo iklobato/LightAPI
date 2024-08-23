@@ -5,11 +5,10 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import as_declarative, declared_attr
 from sqlalchemy import Column, Integer
 
-
 SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./lightapi.db")
 
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL  # , connect_args={"check_same_thread": False}
+    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -58,3 +57,18 @@ class Base:
         return {
             column.name: getattr(self, column.name) for column in self.__table__.columns
         }
+
+    def get_db(self):
+        """
+        Create a database session.
+
+        Returns:
+            Session: A database session instance
+        """
+
+        db = SessionLocal()
+        try:
+            yield db
+
+        finally:
+            db.close()

@@ -1,3 +1,4 @@
+import logging
 from abc import abstractmethod, ABC
 from dataclasses import dataclass, field
 from lightapi.database import Base, SessionLocal
@@ -65,6 +66,9 @@ class AbstractHandler(ABC):
         db: Session = SessionLocal()
         try:
             return await self.handle(db, request)
+        except Exception as e:
+            logging.error(f"Error handling request: {e}")
+            return web.json_response({'error': 'Internal server error!'}, status=500)
         finally:
             db.close()
 
@@ -78,7 +82,11 @@ class AbstractHandler(ABC):
         Returns:
             dict: The JSON data from the request body.
         """
-        return await request.json()
+        try:
+            return await request.json()
+        except Exception as e:
+            logging.error(f"Error parsing JSON from request: {e}")
+            raise web.HTTPBadRequest(reason="Invalid JSON!")
 
     def get_item_by_id(self, db: Session, item_id: int):
         """
@@ -91,7 +99,11 @@ class AbstractHandler(ABC):
         Returns:
             Base: The item retrieved from the database, or None if not found.
         """
-        return db.query(self.model).filter(self.model.pk == item_id).first()
+        try:
+            return db.query(self.model).filter(self.model.pk == item_id).first()
+        except Exception as e:
+            logging.error(f"Error retrieving item by ID: {e}")
+            raise web.HTTPBadRequest(reason="Error retrieving item by ID!")
 
     def add_and_commit_item(self, db: Session, item):
         """
@@ -104,10 +116,15 @@ class AbstractHandler(ABC):
         Returns:
             Base: The item after committing to the database.
         """
-        db.add(item)
-        db.commit()
-        db.refresh(item)
-        return item
+        try:
+            db.add(item)
+            db.commit()
+            db.refresh(item)
+            return item
+        except Exception as e:
+            logging.error(f"Error adding and commiting item: {e}")
+            db.rollback()
+            raise web.HTTPBadRequest(reason="Error saving item!")
 
     def delete_and_commit_item(self, db: Session, item):
         """
@@ -117,8 +134,13 @@ class AbstractHandler(ABC):
             db (Session): The SQLAlchemy session for database operations.
             item (Base): The item to delete.
         """
-        db.delete(item)
-        db.commit()
+        try:
+            db.delete(item)
+            db.commit()
+        except Exception as e:
+            logging.error(f"Error deleting and commiting item: {e}")
+            db.rollback()
+            raise web.HTTPBadRequest(reason="Error deleting and commiting item!")
 
     def json_response(self, item, status=200):
         """
@@ -163,10 +185,14 @@ class CreateHandler(AbstractHandler):
         Returns:
             web.Response: The JSON response containing the created item.
         """
-        data = await self.get_request_json(request)
-        item = self.model(**data)
-        item = self.add_and_commit_item(db, item)
-        return self.json_response(item, status=201)
+        try:
+            data = await self.get_request_json(request)
+            item = self.model(**data)
+            item = self.add_and_commit_item(db, item)
+            return self.json_response(item, status=201)
+        except Exception as e:
+            logging.error(f"Error creating item: {e}")
+            return self.json_response("Error creating item!", status=400)
 
 
 class ReadHandler(AbstractHandler):
@@ -186,9 +212,13 @@ class ReadHandler(AbstractHandler):
             web.Response: The JSON response containing the item(s) or an error message.
         """
         if 'id' not in request.match_info:
-            items = db.query(self.model).all()
-            response = [item.serialize() for item in items]
-            return self.json_response(response, status=200)
+            try:
+                items = db.query(self.model).all()
+                response = [item.serialize() for item in items]
+                return self.json_response(response, status=200)
+            except Exception as e:
+                logging.error(f"Error retrieving an item by ID: {e}")
+                return self.json_error_response("Error retrieving an item!", status=500)
         else:
             item_id = int(request.match_info['id'])
             item = self.get_item_by_id(db, item_id)
@@ -219,12 +249,16 @@ class UpdateHandler(AbstractHandler):
         if not item:
             return self.json_error_response('Item not found', status=404)
 
-        data = await self.get_request_json(request)
-        for key, value in data.items():
-            setattr(item, key, value)
+        try:
+            data = await self.get_request_json(request)
+            for key, value in data.items():
+                setattr(item, key, value)
 
-        item = self.add_and_commit_item(db, item)
-        return self.json_response(item, status=200)
+            item = self.add_and_commit_item(db, item)
+            return self.json_response(item, status=200)
+        except Exception as e:
+            logging.error(f"Error updating item: {e}")
+            return self.json_response("Error updating item!", status=400)
 
 
 class PatchHandler(AbstractHandler):
@@ -248,12 +282,15 @@ class PatchHandler(AbstractHandler):
         if not item:
             return self.json_error_response('Item not found', status=404)
 
-        data = await self.get_request_json(request)
-        for key, value in data.items():
-            setattr(item, key, value)
-
-        item = self.add_and_commit_item(db, item)
-        return self.json_response(item, status=200)
+        try:
+            data = await self.get_request_json(request)
+            for key, value in data.items():
+                setattr(item, key, value)
+            item = self.add_and_commit_item(db, item)
+            return self.json_response(item, status=200)
+        except Exception as e:
+            logging.error(f"Error updating item: {e}")
+            return self.json_response("Error patching item!", status=400)
 
 
 class DeleteHandler(AbstractHandler):
@@ -277,8 +314,12 @@ class DeleteHandler(AbstractHandler):
         if not item:
             return self.json_error_response('Item not found', status=404)
 
-        self.delete_and_commit_item(db, item)
-        return web.Response(status=204)
+        try:
+            self.delete_and_commit_item(db, item)
+            return web.Response(status=204)
+        except Exception as e:
+            logging.error(f"Error deleting item: {e}")
+            return self.json_response("Error deleting item!", status=400)
 
 
 class RetrieveAllHandler(AbstractHandler):
@@ -297,9 +338,13 @@ class RetrieveAllHandler(AbstractHandler):
         Returns:
             web.Response: The JSON response containing all items.
         """
-        items = db.query(self.model).all()
-        response = [item.serialize() for item in items]
-        return web.json_response(response, status=200)
+        try:
+            items = db.query(self.model).all()
+            response = [item.serialize() for item in items]
+            return web.json_response(response, status=200)
+        except Exception as e:
+            logging.error(f"Error retrieving all items: {e}")
+            return self.json_response("Error retrieving all items!", status=500)
 
 
 class OptionsHandler(AbstractHandler):
