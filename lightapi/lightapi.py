@@ -33,9 +33,15 @@ class LightApi:
         except SQLAlchemyError as e:
             logging.error(f"Error creating tables: {e}")
 
-    def register(self, models: dict):
-        for path, model in models.items():
-            self.routes.extend(create_handler(model))
+    def register(self, models: dict[str, Base] | list[Base]) -> None:
+        if isinstance(models, dict):
+            for path, model in models.items():
+                path = path.removeprefix("/")
+                self.routes.extend(create_handler(path, model))
+
+        elif isinstance(models, list):
+            for model in models:
+                self.routes.extend(create_handler(model.__tablename__, model))
 
     def run(self, host='0.0.0.0', port=8000):
         self.app.add_routes(self.routes)

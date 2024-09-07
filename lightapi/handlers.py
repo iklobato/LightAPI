@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from aiohttp import web
 
 
-def create_handler(model: Base):
+def create_handler(endpoint: str, model: Base) -> list:
     """
     Creates a list of route handlers for the given model.
 
@@ -15,15 +15,16 @@ def create_handler(model: Base):
     Returns:
         list: A list of aiohttp web routes for the specified model.
     """
+    endpoint = endpoint if len(endpoint) > 0 else model.__tablename__
     return [
-        web.post(f'/{model.__tablename__}/', CreateHandler(model)),
-        web.get(f'/{model.__tablename__}/', RetrieveAllHandler(model)),
-        web.get(f'/{model.__tablename__}/{{id}}', ReadHandler(model)),
-        web.put(f'/{model.__tablename__}/{{id}}', UpdateHandler(model)),
-        web.delete(f'/{model.__tablename__}/{{id}}', DeleteHandler(model)),
-        web.patch(f'/{model.__tablename__}/{{id}}', PatchHandler(model)),
-        web.options(f'/{model.__tablename__}/', OptionsHandler(model)),
-        web.head(f'/{model.__tablename__}/', HeadHandler(model)),
+        web.post(f"/{endpoint}/", CreateHandler(model)),
+        web.get(f"/{endpoint}/", RetrieveAllHandler(model)),
+        web.get(f"/{endpoint}/{{id}}", ReadHandler(model)),
+        web.put(f"/{endpoint}/{{id}}", UpdateHandler(model)),
+        web.delete(f"/{endpoint}/{{id}}", DeleteHandler(model)),
+        web.patch(f"/{endpoint}/{{id}}", PatchHandler(model)),
+        web.options(f"/{endpoint}/", OptionsHandler(model)),
+        web.head(f"/{endpoint}/", HeadHandler(model)),
     ]
 
 
