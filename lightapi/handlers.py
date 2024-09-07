@@ -15,6 +15,7 @@ def create_handler(endpoint: str, model: Base) -> list:
     Returns:
         list: A list of aiohttp web routes for the specified model.
     """
+    endpoint = endpoint if len(endpoint) > 0 else model.__tablename__
     return [
         web.post(f"/{endpoint}/", CreateHandler(model)),
         web.get(f"/{endpoint}/", RetrieveAllHandler(model)),
