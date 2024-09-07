@@ -36,6 +36,7 @@ class LightApi:
     def register(self, models: dict[str, Base] | list[Base]) -> None:
         if isinstance(models, dict):
             for path, model in models.items():
+                path = path.removeprefix("/")
                 self.routes.extend(create_handler(path, model))
 
         elif isinstance(models, list):
