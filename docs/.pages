@@ -1,0 +1,7 @@
+title: Home
+nav:
+    - home
+    - getting-started
+    - testing.md
+    - license.md
+    - reference

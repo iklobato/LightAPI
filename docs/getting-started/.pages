@@ -1,0 +1,6 @@
+title: Getting Started
+
+nav:
+    - installation.md
+    - usage.md
+    - database.md
