@@ -1,6 +1,11 @@
-title: Home
+title: LightAPI
+
 nav:
-    - home
+    - Home:
+        - index.md
+        - features.md
+        - using.md
+        - why.md
     - getting-started
     - testing.md
     - license.md
