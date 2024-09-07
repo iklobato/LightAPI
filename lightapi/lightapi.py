@@ -37,6 +37,7 @@ class LightApi:
         if isinstance(models, dict):
             for path, model in models.items():
                 self.routes.extend(create_handler(path, model))
+
         elif isinstance(models, list):
             for model in models:
                 self.routes.extend(create_handler(model.__tablename__, model))
