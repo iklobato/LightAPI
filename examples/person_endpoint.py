@@ -22,7 +22,7 @@ class Company(Base):
 
 if __name__ == '__main__':
     app = LightApi()
-    app.register({'/person': Person})
-    app.register({'/company': Company})
+    app.register({"person": Person})
+    app.register({"company": Company})
     app.run()
 
