@@ -54,7 +54,7 @@ plugins:
   - git-revision-date-localized:
       enable_creation_date: true
   - git-committers:
-      repository: giulio333/coding-compendium
+      repository: giulio333/LightAPI
       branch: main
   - search:
         lang: it
