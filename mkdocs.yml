@@ -9,7 +9,7 @@ edit_uri: https://github.com/giulio333/LightAPI/edit/main/docs
 theme:
   name: material
   #custom_dir: overrides
-  language: it
+  language: en
   font:
     text: DM Sans
   icon:

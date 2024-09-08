@@ -22,6 +22,15 @@ setup(
     ],
     extras_require={
         'test': ['pytest'],
+        'docs': [
+            'mkdocs-material',
+            'mkdocstrings[python]',
+            'mkdocs-glightbox',
+            'mkdocs-awesome-pages-plugin',
+            'mkdocs-git-committers-plugin-2',
+            'mkdocs-git-revision-date-localized-plugin',
+            'mkdocs-git-authors-plugin',
+        ]
     },
     classifiers=[
         'Programming Language :: Python :: 3',

@@ -5,7 +5,7 @@ title: Installation
 ### Install LightAPI via pip:
 
 ``` bash
-pip install LightApi
+pip install light-api
 ```
 ### PyPI Page
 
