@@ -3,6 +3,8 @@ from lightapi.database import Base
 
 from sqlalchemy import Column, String, Boolean
 
+from lightapi.rest import RestEndpoint
+
 
 class Person(Base):
     name = Column(String)
@@ -20,9 +22,19 @@ class Company(Base):
     website = Column(String)
 
 
+class MyCustomEndpoint(RestEndpoint):
+    def get(self):
+        return {'data': 'Hello World'}
+
+
 if __name__ == '__main__':
     app = LightApi()
-    app.register({'/person': Person})
-    app.register({'/company': Company})
+    app.register(
+        {
+            '/company': Company,
+            '/person': Person
+        }
+    )
+    app.register({'/custom': MyCustomEndpoint})
     app.run()
 
