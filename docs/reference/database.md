@@ -1,0 +1,5 @@
+---
+title: Database
+---
+
+::: lightapi.database

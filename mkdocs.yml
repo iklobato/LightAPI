@@ -1,0 +1,150 @@
+site_name: LightAPI
+site_url: https://iklobato.github.io/LightAPI/
+site_description: LightApi is a lightweight API framework designed for rapid development of RESTful APIs in Python.
+
+repo_url: https://github.com/iklobato/LightAPI
+repo_name: LightAPI
+edit_uri: https://github.com/iklobato/LightAPI/edit/main/docs
+
+theme:
+  name: material
+  #custom_dir: overrides
+  language: en
+  font:
+    text: DM Sans
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil 
+    view: material/eye
+
+  palette:
+
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      primary: green
+      accent: green
+      scheme: default 
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      primary: green
+      accent: green
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+  features:
+    - content.action.edit
+    - navigation.tabs
+    - content.code.copy
+    - content.code.annotate
+    # - navigation.indexes
+    - navigation.footer
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.instant.preview
+    - navigation.tracking
+
+       
+plugins:
+  - git-authors
+  - git-revision-date-localized:
+      enable_creation_date: true
+  - git-committers:
+      repository: iklobato/LightAPI
+      branch: main
+  - search:
+        lang: it
+  - awesome-pages
+  #- blog:
+  #    blog_toc: true
+  #    pagination_per_page: 5
+  - tags
+  - glightbox:
+      touchNavigation: true
+      loop: false
+      effect: zoom
+      slide_effect: slide
+      width: 100%
+      height: auto
+      zoomable: true
+      draggable: true
+      skip_classes:
+        - custom-skip-class-name
+      auto_caption: false
+      caption_position: bottom
+      background: white
+      shadow: true
+      manual: false
+  - mkdocstrings:
+      handlers:
+        python:
+          import:
+            - https://docs.python-requests.org/en/master/objects.inv
+          options:
+            annotations_path: brief
+            separate_signature: true
+            show_signature_annotations: true
+            signature_crossrefs: true
+            show_signature: true
+            show_docstring_attributes: true
+            show_docstring_functions: true
+            show_labels: true
+            group_by_category: true
+            show_category_heading: true
+            members_order: source
+            show_if_no_docstring: true
+            show_symbol_type_toc: true
+            show_symbol_type_heading: true
+            show_root_heading: true
+            show_source: true
+            docstring_style: google
+            allow_inspection: true
+          paths: [src]
+  
+markdown_extensions:
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - admonition
+  - pymdownx.details
+  - attr_list
+  - md_in_html
+  - footnotes
+  - def_list
+
+validation:
+  omitted_files: warn
+  absolute_links: warn  # Or 'relative_to_docs' - new in MkDocs 1.6
+  unrecognized_links: warn
+
+extra:
+  social:
+  - icon: fontawesome/brands/github 
+    link: https://github.com/iklobato/LightAPI
+    name: LightAPI
+  - icon: /fontawesome/regular/envelope
+    name: send me an email
+    link: mailto:iklobato1@gmail.com
