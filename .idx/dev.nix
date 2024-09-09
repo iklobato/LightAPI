@@ -31,6 +31,7 @@
       onStart = {
         activate-venv = ''
           echo "source .venv/bin/activate" >> ~/.bashrc
+          echo "Welcome to LightApi Environment"
         '';
       };
     };
