@@ -1,7 +1,7 @@
+from sqlalchemy import Boolean, Column, String
+
 from lightapi import LightApi
 from lightapi.database import Base
-
-from sqlalchemy import Column, String, Boolean
 
 
 class Person(Base):
