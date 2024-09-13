@@ -97,6 +97,26 @@ LightAPI is designed to streamline API development by focusing on simplicity and
 pip install LightApi
 ```
 
+### Open Online
+You can directly edit and test this project online using [Project IDX](https://idx.dev/). 
+
+The repository includes pre-configured settings for the IDX environment (.idx folder). Simply click the link below to open the repository in Project IDX:
+
+<a href="https://idx.google.com/import?url=https://github.com/iklobato/LightAPI.git">
+  <picture>
+    <source
+      media="(prefers-color-scheme: dark)"
+      srcset="https://cdn.idx.dev/btn/open_dark_32.svg">
+    <source
+      media="(prefers-color-scheme: light)"
+      srcset="https://cdn.idx.dev/btn/open_light_32.svg">
+    <img
+      height="32"
+      alt="Open in IDX"
+      src="https://cdn.idx.dev/btn/open_purple_32.svg">
+  </picture>
+</a>
+
 ### PyPI Page
 LightApi on PyPI: https://pypi.org/project/LightApi/
 

@@ -24,13 +24,15 @@
         create-venv = ''
           python -m venv .venv
           source .venv/bin/activate
-          pip install -r requirements-dev.txt
+          pip install -e .[test,docs]
         '';
       };
       # Runs when the workspace is (re)started
       onStart = {
-        # Example: start a background task to watch and re-build backend code
-        # watch-backend = "npm run watch-backend";
+        activate-venv = ''
+          echo "source .venv/bin/activate" >> ~/.bashrc
+          echo "Welcome to LightApi Environment"
+        '';
       };
     };
   };
