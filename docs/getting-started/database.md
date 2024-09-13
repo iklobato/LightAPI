@@ -1,5 +1,5 @@
 ---
-title: Databse
+title: Database
 ---
 
 ## Databases Compatibility
@@ -18,7 +18,8 @@ LightAPI supports the following databases:
 Set the `DATABASE_URL` environment variable to connect to your database:
 
 ``` py
-import os os.environ['DATABASE_URL'] = "postgresql://user:password@postgresserver/db"
+import os
+os.environ['DATABASE_URL'] = "postgresql://user:password@postgresserver/db"
 ```
 
 If no `DATABASE_URL` is provided, LightAPI defaults to using an in-memory SQLite database.

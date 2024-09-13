@@ -16,7 +16,7 @@ LightAPI leverages:
 ## Using LightAPI
 Import the LightApi class, define your models using SQLAlchemy, and create an instance of LightApi to register your models. The framework automatically creates RESTful endpoints for each model.
 
-## Example Usage:
+## Example Usage: Model
 ```python
 from sqlalchemy import Column, Integer, String, Boolean
 from lightapi import LightApi
@@ -30,6 +30,33 @@ class Person(Base):
 if __name__ == '__main__':
     app = LightApi()
     app.register({'/person': Person})
+    app.run()
+```
+
+## Example Usage: Custom Endpoints
+Custom Endpoints with RestEndpoint
+LightAPI is not limited to auto-generated CRUD endpoints. You can also create custom endpoints by subclassing RestEndpoint for complete control.
+
+Example: Custom User Endpoint
+```python
+from lightapi import LightApi
+from lightapi.rest import RestEndpoint
+
+class CustomEndpoint(RestEndpoint):
+    http_method_names = ['GET', 'POST']  # Only allow GET and POST requests
+
+    def get(self, request):
+        return {'message': 'GET request to users'}
+
+    def post(self, request):
+        return {'message': 'POST request with data'}
+
+if __name__ == '__main__':
+
+    app = LightApi()
+    app.register({
+        '/custom': CustomEndpoint
+    })
     app.run()
 ```
 
@@ -65,29 +92,6 @@ os.environ['DATABASE_URL'] = "postgresql://user:password@postgresserver/db"
 ```
 if no DATABASE_URL is provided, LightAPI defaults to using an in-memory SQLite database.
 
-## Testing Handlers
-You can test the handlers directly without relying on a live server by using Python’s aiohttp client to simulate requests. Here is a sample script to test all endpoints:
-```python
-import aiohttp
-import asyncio
-
-BASE_URL = 'http://localhost:8080'
-
-async def test_endpoints():
-    async with aiohttp.ClientSession() as session:
-        await session.post(f'{BASE_URL}/person/', json={ "name": "John Doe", "email": "john@example.com", "email_verified": True })
-        await session.get(f'{BASE_URL}/person/')
-        await session.get(f'{BASE_URL}/person/1')
-        await session.put(f'{BASE_URL}/person/1', json={ "name": "Jane Doe", "email": "jane@example.com" })
-        await session.patch(f'{BASE_URL}/person/1', json={ "email_verified": False })
-        await session.delete(f'{BASE_URL}/person/1')
-        await session.options(f'{BASE_URL}/person/')
-        await session.head(f'{BASE_URL}/person/')
-
-if __name__ == '__main__':
-    asyncio.run(test_endpoints())
-```
-
 ## Why LightAPI
 LightAPI is designed to streamline API development by focusing on simplicity and speed. It’s ideal for prototyping, small projects, or situations where development speed is essential.
 
@@ -96,26 +100,6 @@ LightAPI is designed to streamline API development by focusing on simplicity and
 ```bash
 pip install LightApi
 ```
-
-### Open Online
-You can directly edit and test this project online using [Project IDX](https://idx.dev/). 
-
-The repository includes pre-configured settings for the IDX environment (.idx folder). Simply click the link below to open the repository in Project IDX:
-
-<a href="https://idx.google.com/import?url=https://github.com/iklobato/LightAPI.git">
-  <picture>
-    <source
-      media="(prefers-color-scheme: dark)"
-      srcset="https://cdn.idx.dev/btn/open_dark_32.svg">
-    <source
-      media="(prefers-color-scheme: light)"
-      srcset="https://cdn.idx.dev/btn/open_light_32.svg">
-    <img
-      height="32"
-      alt="Open in IDX"
-      src="https://cdn.idx.dev/btn/open_purple_32.svg">
-  </picture>
-</a>
 
 ### PyPI Page
 LightApi on PyPI: https://pypi.org/project/LightApi/
