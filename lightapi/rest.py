@@ -67,15 +67,7 @@ class RestEndpoint(ABC):
     """
 
     _tablename: str
-    http_method_names: Set[str] = [
-        "GET",
-        "POST",
-        "PUT",
-        "PATCH",
-        "DELETE",
-        "HEAD",
-        "OPTIONS",
-    ]
+    http_method_names: Set[str] = [method.value for method in HttpEnum]
     http_exclude: List[str] = list()
     authentication_class: None
 
@@ -107,13 +99,21 @@ class RestEndpoint(ABC):
             routes.append(web.get(f'/{self.tablename}/', self._create_handler('get')))
             # routes.append(web.get(f'/{self.tablename}/{{id}}', self._create_handler('get')))
         if 'PUT' in available_verbs:
-            routes.append(web.put(f'/{self.tablename}/{{id}}', self._create_handler('put')))
+            routes.append(
+                web.put(f'/{self.tablename}/{{id}}', self._create_handler('put'))
+            )
         if 'DELETE' in available_verbs:
-            routes.append(web.delete(f'/{self.tablename}/{{id}}', self._create_handler('delete')))
+            routes.append(
+                web.delete(f'/{self.tablename}/{{id}}', self._create_handler('delete'))
+            )
         if 'PATCH' in available_verbs:
-            routes.append(web.patch(f'/{self.tablename}/{{id}}', self._create_handler('patch')))
+            routes.append(
+                web.patch(f'/{self.tablename}/{{id}}', self._create_handler('patch'))
+            )
         if 'OPTIONS' in available_verbs:
-            routes.append(web.options(f'/{self.tablename}/', self._create_handler('options')))
+            routes.append(
+                web.options(f'/{self.tablename}/', self._create_handler('options'))
+            )
         if 'HEAD' in available_verbs:
             routes.append(web.head(f'/{self.tablename}/', self._create_handler('head')))
 
