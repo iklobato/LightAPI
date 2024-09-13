@@ -101,6 +101,9 @@ LightAPI is designed to streamline API development by focusing on simplicity and
 pip install LightApi
 ```
 
+## Documentation
+Check the full documentation on [here](https://iklobato.github.io/LightAPI/) (under development, let me know where to improve)
+
 ### PyPI Page
 LightApi on PyPI: https://pypi.org/project/LightApi/
 
