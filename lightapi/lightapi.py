@@ -1,4 +1,4 @@
-from typing import Dict, Type, Callable
+from typing import Callable, Dict, Type
 
 from sqlalchemy.exc import SQLAlchemyError
 
