@@ -33,6 +33,11 @@ class Base:
     """
 
     pk = Column(Integer, primary_key=True, autoincrement=True, unique=True)
+    __table__ = None
+
+    @property
+    def table(self):
+        return self.__table__
 
     @declared_attr
     def __tablename__(cls):
@@ -56,5 +61,5 @@ class Base:
             dict: A dictionary representation of the model instance.
         """
         return {
-            column.name: getattr(self, column.name) for column in self.__table__.columns
+            column.name: getattr(self, column.name) for column in self.table.columns
         }

@@ -1,11 +1,13 @@
 from abc import abstractmethod, ABC
 from dataclasses import dataclass, field
+from typing import Type, List
+
 from lightapi.database import Base, SessionLocal
 from sqlalchemy.orm import Session
 from aiohttp import web
 
 
-def create_handler(model: Base):
+def create_handler(model: Type[Base]) -> List[web.RouteDef]:
     """
     Creates a list of route handlers for the given model.
 
@@ -36,7 +38,7 @@ class AbstractHandler(ABC):
         model (Base): The SQLAlchemy model class to operate on.
     """
 
-    model: Base = field(default=None)
+    model: Type[Base] = field(default=None)
 
     @abstractmethod
     async def handle(self, db: Session, request: web.Request):
