@@ -29,10 +29,9 @@
       };
       # Runs when the workspace is (re)started
       onStart = {
-        activate-venv = ''
-          echo "source .venv/bin/activate" >> ~/.bashrc
-          echo "Welcome to LightApi Environment"
-        '';
+        #activate-venv = ''
+        #  echo "source .venv/bin/activate" >> ~/.bashrc
+        #'';
       };
     };
   };
