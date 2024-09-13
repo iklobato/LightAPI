@@ -61,17 +61,6 @@ class Base:
     """
 
     pk = Column(Integer, primary_key=True, autoincrement=True, unique=True)
-    __table__ = None
-
-    @property
-    def table(self):
-        """
-        Returns the SQLAlchemy table associated with this model.
-
-        Returns:
-            Table: The SQLAlchemy Table object for the model.
-        """
-        return self.__table__
 
     @declared_attr
     def __tablename__(cls):

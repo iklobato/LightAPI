@@ -9,23 +9,23 @@ from lightapi.database import Base
 class User(Base):
     __tablename__ = 'users'
 
-    id = Column(Integer, primary_key=True, index=True)
+    # id = Column(Integer, primary_key=True, index=True, autoincrement=True, unique=True)
     username = Column(String, unique=True, index=True)
     password_hash = Column(String)  # Store hashed passwords
 
     def __repr__(self):
-        return f"<User(id={self.id}, username='{self.username}')>"
+        return f"<User(id={self.pk}, username='{self.username}')>"
 
 
-class Token(Base):
+class JWTToken(Base):
     __tablename__ = 'tokens'
 
-    id = Column(Integer, primary_key=True, index=True)
+    # id = Column(Integer, primary_key=True, index=True, autoincrement=True, unique=True)
     token = Column(String, unique=True, index=True)
-    user_id = Column(Integer, ForeignKey('users.id'))
+    user_id = Column(Integer, ForeignKey('users.pk'))
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     user = relationship("User")
 
     def __repr__(self):
-        return f"<Token(id={self.id}, token='{self.token}', user_id={self.user_id})>"
+        return f"<Token(id={self.pk}, token='{self.token}', user_id={self.user_id})>"
