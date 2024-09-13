@@ -16,13 +16,7 @@ class CustomEndpoint(RestEndpoint):
 
 if __name__ == '__main__':
 
-    def initialize(**kwargs):
-        print(f'My pre configuration with {kwargs} parameters')
-
-    app = LightApi(
-        initialize_callback=initialize,
-        initialize_arguments={'param1': 'value1'}
-    )
+    app = LightApi()
     app.register({
         '/custom': CustomEndpoint
     })
