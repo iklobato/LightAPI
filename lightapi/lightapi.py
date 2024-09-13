@@ -67,6 +67,9 @@ class LightApi:
         """
         if not callback:
             return
+        if not callable(callback):
+            raise TypeError("Callback must be a callable object")
+        logging.debug(f"Initializing LightApi with {callback_arguments}")
         callback(**callback_arguments)
 
     def register(self, handlers: Dict[str, Type]) -> None:
@@ -91,6 +94,8 @@ class LightApi:
                 raise TypeError(
                     f"Handler for path {path} must be either a SQLAlchemy model or a RestEndpoint subclass."
                 )
+        for r in self.routes:
+            logging.info(f"{r.method} {r.path}")
 
     def run(self, host: str = '0.0.0.0', port: int = 8000) -> None:
         """
