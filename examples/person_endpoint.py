@@ -51,8 +51,8 @@ if __name__ == '__main__':
         initialize_arguments={'param1': 'value1'}
     )
     app.register({
-        # '/company': Company,
-        # '/person': Person,
+        '/company': Company,
+        '/person': Person,
         '/custom': CustomEndpoint
     })
     app.run()
