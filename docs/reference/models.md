@@ -1,5 +1,0 @@
----
-title: models
----
-
-::: lightapi.models
