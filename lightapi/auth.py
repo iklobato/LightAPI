@@ -318,36 +318,6 @@ class DefaultJWTAuthentication(AbstractAuthentication):
 
         return None
 
-    # def generate_token(self, user_info: Dict[str, str]) -> str:
-    #     """
-    #     Generates a JWT token for the provided user information and stores it in the database.
-    #
-    #     Args:
-    #         user_info (Dict[str, str]): A dictionary containing user information to be included in the token.
-    #
-    #     Returns:
-    #         str: The generated JWT token.
-    #
-    #     Example:
-    #         jwt_auth = DefaultJWTAuthentication()
-    #         token = jwt_auth.generate_token({'user_id': '123'})
-    #         print(f"Generated JWTToken: {token}")
-    #     """
-    #     payload = {
-    #         **user_info,
-    #         'exp': datetime.datetime.utcnow() + self.EXPIRATION_DELTA,
-    #     }
-    #     token = jwt.encode(payload, self.secret_key, algorithm=self.ALGORITHM)
-    #
-    #     with SessionLocal() as session:
-    #         db_token = JWTToken()
-    #         db_token.token = token
-    #         db_token.user_id = user_info.get('user_id')
-    #         session.add(db_token)
-    #         session.commit()
-    #
-    #     return token
-
     def get_user_model(self):
         return User
 

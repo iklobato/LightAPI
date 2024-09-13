@@ -121,13 +121,70 @@ class RestEndpoint(ABC):
         return routes
 
     def _create_handler(self, method_name: str) -> Callable:
+        """
+        Creates an HTTP request handler for a specified HTTP method.
+
+        This method generates a handler function for a given HTTP method (e.g., POST, GET, PUT, DELETE, etc.).
+        The handler function will perform the following actions:
+
+        1. **Authentication**: If an `authentication_class` is provided, the handler will first check for the `Authorization`
+           header in the request. It will extract the token, attempt to authenticate it using the `authenticate` method
+           of the `authentication_class`, and add the authenticated user information to the request context if successful.
+           If the token is missing or invalid, the handler will respond with an HTTP 401 Unauthorized error.
+
+        2. **Method Handling**: The handler will then invoke the method corresponding to the specified HTTP method (e.g.,
+           `post`, `get`, `put`, `delete`, `patch`). If the method is not implemented in the subclass, it will raise
+           a `MissingHandlerImplementationError`.
+
+        3. **Response**: After invoking the method, the handler will return the response. If the response is a dictionary,
+           it will be converted to a JSON response. Otherwise, it will be returned as-is.
+
+        Args:
+            method_name (str): The name of the HTTP method for which to create the handler. It should match the name of
+                               the method defined in the subclass (e.g., 'post', 'get', 'put', 'delete', 'patch').
+
+        Returns:
+            Callable: An asynchronous function that handles HTTP requests for the specified method. The function
+                      will perform authentication (if applicable), invoke the corresponding method, and return
+                      the appropriate HTTP response.
+
+        Raises:
+            MissingHandlerImplementationError: If the method specified by `method_name` is not implemented in the
+                                                subclass.
+            web.HTTPUnauthorized: If authentication fails due to a missing or invalid token.
+
+        Example:
+            # Assuming 'post' method is implemented in the subclass
+            handler = self._create_handler('post')
+            response = await handler(request)
+            return response
+
+        Note:
+            - The handler function is asynchronous and should be awaited when invoked.
+            - The authentication step assumes the token is passed in the `Authorization` header in the format "Bearer <token>".
+        """
         async def handler(request: web.Request):
+            if self.authentication_class:
+                auth_header = request.headers.get('Authorization')
+                if not auth_header:
+                    raise web.HTTPUnauthorized(reason="Authorization header missing.")
+
+                token = auth_header.replace('Bearer ', '')
+                auth_instance = self.authentication_class()
+                try:
+                    user_info = auth_instance.authenticate(token)
+                    if not user_info:
+                        raise web.HTTPUnauthorized(reason="Invalid or expired token.")
+                    request['user'] = user_info
+                except web.HTTPUnauthorized as e:
+                    return web.json_response({'error': str(e)}, status=401)
+
             method = getattr(self, method_name, None)
             if not method:
                 raise MissingHandlerImplementationError(
                     f"Handler for {method_name} not implemented.", method_name
                 )
-            response = method(request)
+            response = await method(request)
             if isinstance(response, dict):
                 return web.json_response(response)
             return response
