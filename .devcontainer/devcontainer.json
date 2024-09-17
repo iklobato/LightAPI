@@ -1,0 +1,16 @@
+{
+    "name": "LightAPI Development Container",
+    "image": "mcr.microsoft.com/devcontainers/python:3.11",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "donjayamanne.python-extension-pack",
+                "qwtel.sqlite-viewer",
+                "humao.rest-client",
+                "rangav.vscode-thunder-client"
+            ]
+        }
+    },
+    "postCreateCommand": "pip install -e ."
+}
