@@ -3,10 +3,5 @@ title: LightAPI
 nav:
     - Home:
         - index.md
-        - features.md
-        - using.md
-        - why.md
     - getting-started
-    - testing.md
-    - license.md
     - reference

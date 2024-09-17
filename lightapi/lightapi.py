@@ -39,7 +39,9 @@ class LightApi:
             Starts the web application and runs the server.
     """
 
-    def __init__(self, initialize_callback: Callable = None, initialize_arguments: Dict = None) -> None:
+    def __init__(
+        self, initialize_callback: Callable = None, initialize_arguments: Dict = None
+    ) -> None:
         """
         Initializes the LightApi, sets up the aiohttp application, and creates tables in the database.
 
@@ -50,8 +52,7 @@ class LightApi:
             SQLAlchemyError: If there is an error during the creation of tables.
         """
         self.initialize(
-            callback=initialize_callback,
-            callback_arguments=initialize_arguments
+            callback=initialize_callback, callback_arguments=initialize_arguments
         )
         self.app = web.Application()
         self.routes = []
@@ -61,7 +62,9 @@ class LightApi:
         except SQLAlchemyError as e:
             logging.error(f"Error creating tables: {e}")
 
-    def initialize(self, callback: Callable = None, callback_arguments: Dict = ()) -> None:
+    def initialize(
+        self, callback: Callable = None, callback_arguments: Dict = ()
+    ) -> None:
         """
         Initializes the LightApi according to a callable
         """

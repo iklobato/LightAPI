@@ -26,7 +26,7 @@ If no `DATABASE_URL` is provided, LightAPI defaults to using an in-memory SQLite
 
 ## API Endpoints
 
-LightAPI automatically generates the following endpoints for each model:
+LightAPI automatically generates the following endpoints for each model, the endpoint name is based on the class name:
 
 | HTTP Method | Endpoint Example            | Handler Class          | Description                                              |
 |-------------|-----------------------------|------------------------|----------------------------------------------------------|

@@ -7,6 +7,8 @@ title: Overview
 It simplifies API development by providing a **minimal interface** while maintaining flexibility and performance through asynchronous programming.
 
 ## Key Features
+- Async by Default: All endpoints are asynchronous by default, allowing for concurrent request handling.
+- JWT Authentication by default: JWT authentication is built-in, providing secure access to API endpoints.
 - Simplicity: Minimal code is required to define and register API endpoints.
 - Flexibility: Easily define SQLAlchemy models and generate CRUD API endpoints for them.
 - Performance: Powered by aiohttp to handle concurrent requests efficiently, ensuring high performance for asynchronous HTTP handling.
@@ -56,7 +58,8 @@ from lightapi.rest import RestEndpoint
 
 class CustomEndpoint(RestEndpoint):
     tablename = 'users'
-    http_method_names = ['GET', 'POST']  # Only allow GET and POST requests
+    http_method_names = ['GET', 'POST']  # Only allowing GET and POST requests
+    # http_method_names = ['PUT', 'PATCH']  # or only allowing PUT and PATCH requests
 
     def get(self, request):
         return {'message': 'GET request to users'}

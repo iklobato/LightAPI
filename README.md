@@ -33,6 +33,16 @@ if __name__ == '__main__':
     app.run()
 ```
 
+## Methods created by LightAPI
+LightAPI automatically generates the following methods for each model:
+- GET
+- POST
+- PUT
+- PATCH
+- DELETE
+- OPTIONS
+- HEAD
+
 ## Example Usage: Custom Endpoints
 Custom Endpoints with RestEndpoint
 LightAPI is not limited to auto-generated CRUD endpoints. You can also create custom endpoints by subclassing RestEndpoint for complete control.
@@ -59,6 +69,37 @@ if __name__ == '__main__':
     })
     app.run()
 ```
+This will create a custom endpoint at /custom that only allows GET and POST requests.
+
+Example: Custom User Endpoint excluding GET method
+```python
+from lightapi import LightApi
+from lightapi.rest import RestEndpoint
+
+class CustomEndpoint(RestEndpoint):
+    http_exclude = ['GET', 'PATCH', 'HEAD', 'OPTIONS']  # Allow all methods except this ones
+
+    def post(self, request):
+        return {'message': 'POST request with data'}
+    
+    def put(self, request):
+        return {'message': 'PUT request with data'}
+    
+    def delete(self, request):
+        return {'message': 'DELETE request with data'}
+
+if __name__ == '__main__':
+
+    app = LightApi()
+    app.register({
+        '/custom': CustomEndpoint
+    })
+    app.run()
+```
+This example will create a custom endpoint at /custom that allows all methods except GET, PATCH, HEAD and OPTIONS.
+Note that the http_exclude attribute is optional, if not provided, all methods will be allowed.
+You need to provide the scope for all methods you want to allow.
+
 
 ## API Endpoints
 LightAPI automatically generates the following endpoints for each model:

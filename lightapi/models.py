@@ -1,37 +1,31 @@
-from sqlalchemy import Column, Integer, String, Boolean
+import datetime
+
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy.orm import relationship
 
 from lightapi.database import Base
 
 
-class Person(Base):
-    __tablename__ = "person"
+class User(Base):
+    __tablename__ = 'users'
 
-    pk = Column(Integer, primary_key=True, autoincrement=True, unique=True)
-    name = Column(String)
-    email = Column(String, unique=True)
-    email_verified = Column(Boolean, default=False)
+    # id = Column(Integer, primary_key=True, index=True, autoincrement=True, unique=True)
+    username = Column(String, unique=True, index=True)
+    password_hash = Column(String)  # Store hashed passwords
 
-    def as_dict(self):
-        return {
-            "pk": self.pk,
-            "name": self.name,
-            "email": self.email,
-            "email_verified": self.email_verified,
-        }
+    def __repr__(self):
+        return f"<User(id={self.pk}, username='{self.username}')>"
 
 
-class Company(Base):
-    __tablename__ = "company"
+class JWTToken(Base):
+    __tablename__ = 'tokens'
 
-    pk = Column(Integer, primary_key=True, autoincrement=True, unique=True)
-    name = Column(String)
-    email = Column(String, unique=True)
-    website = Column(String)
+    # id = Column(Integer, primary_key=True, index=True, autoincrement=True, unique=True)
+    token = Column(String, unique=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.pk'))
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
-    def as_dict(self):
-        return {
-            "pk": self.pk,
-            "name": self.name,
-            "email": self.email,
-            "website": self.website,
-        }
+    user = relationship("User")
+
+    def __repr__(self):
+        return f"<Token(id={self.pk}, token='{self.token}', user_id={self.user_id})>"

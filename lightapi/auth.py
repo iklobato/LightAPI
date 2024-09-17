@@ -5,6 +5,9 @@ from aiohttp import web
 import datetime
 import os
 
+from lightapi.database import SessionLocal, Base, engine
+from lightapi.models import User, JWTToken
+
 
 class AbstractAuthentication(ABC):
     """
@@ -26,8 +29,34 @@ class AbstractAuthentication(ABC):
 
     SECRET_KEY: str
 
+    def __init__(self, user_model: Optional[Type] = None, token_model: Optional[Type] = None):
+        """
+        Initializes the AbstractAuthentication class with optional user and token models.
+        If the tables for these models don't exist in the database, they will be created.
+
+        Args:
+            user_model (Optional[Type]): The user model to be used for authentication.
+            token_model (Optional[Type]): The token model to be used for JWT operations.
+        """
+        self._user_model = user_model or self.get_user_model()
+        self._token_model = token_model or self.get_token_model()
+
+        # Automatically create tables for the models if they don't exist
+        self.create_models_if_not_exists()
+
+    def create_models_if_not_exists(self):
+        """
+        Creates the necessary tables for the user and token models if they don't exist in the database.
+        """
+        Base.metadata.create_all(
+            bind=engine, tables=[
+                self._user_model.__table__,
+                self._token_model.__table__
+            ]
+        )
+
     @abstractmethod
-    def authenticate(self, token: str) -> Type[NotImplementedError, Optional[Dict[str, str]]]:
+    def authenticate(self, token: str):
         """
         Authenticates the provided token and returns user information if the token is valid.
 
@@ -37,21 +66,76 @@ class AbstractAuthentication(ABC):
         Returns:
             Optional[Dict[str, str]]: A dictionary with user information if authentication is successful,
                                        otherwise None.
+
+        Example:
+            auth = SomeAuthenticationClass()
+            user_info = auth.authenticate('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTIzIn0.S2k4d8iIWT7Dw23kP_1GFGK7eC8mlM5LdrVoOcOXU74')
+            if user_info:
+                print(f"Authenticated User Info: {user_info}")
+            else:
+                print("Authentication failed.")
         """
-        return NotImplementedError
+        return NotImplementedError(
+            f'{self.__class__.__name__} must implement authenticate method'
+        )
+
+    # @abstractmethod
+    # def generate_token(self, user_info: Dict[str, str]):
+    #     """
+    #     Generates a new token for the provided user information.
+    #
+    #     Args:
+    #         user_info (Dict[str, str]): A dictionary containing user information to be encoded in the token.
+    #
+    #     Returns:
+    #         str: The generated token.
+    #
+    #     Example:
+    #         auth = SomeAuthenticationClass()
+    #         token = auth.generate_token({'user_id': '123'})
+    #         print(f"Generated JWTToken: {token}")
+    #     """
+    #     return NotImplementedError(
+    #         f'{self.__class__.__name__} must implement generate_token method'
+    #     )
 
     @abstractmethod
-    def generate_token(self, user_info: Dict[str, str]) -> Type[NotImplementedError, str]:
+    def get_user_model(self):
         """
-        Generates a new token for the provided user information.
+        Returns the SQLAlchemy model class for the user.
 
-        Args:
-            user_info (Dict[str, str]): A dictionary containing user information to be encoded in the token.
+        This method should be overridden by subclasses to return the appropriate user model.
 
         Returns:
-            str: The generated token.
+            Type: The SQLAlchemy model class for the user.
+
+        Example:
+            class MyAuthentication(AbstractAuthentication):
+                def get_user_model(self):
+                    return MyUserModel
         """
-        return NotImplementedError
+        return NotImplementedError(
+            f'{self.__class__.__name__}'
+        )
+
+    @abstractmethod
+    def get_token_model(self):
+        """
+        Returns the SQLAlchemy model class for the token.
+
+        This method should be overridden by subclasses to return the appropriate token model.
+
+        Returns:
+            Type: The SQLAlchemy model class for the token.
+
+        Example:
+            class MyAuthentication(AbstractAuthentication):
+                def get_token_model(self):
+                    return MyJWTTokenModel
+        """
+        return NotImplementedError(
+            f'{self.__class__.__name__}'
+        )
 
 
 class DefaultJWTAuthentication(AbstractAuthentication):
@@ -68,38 +152,49 @@ class DefaultJWTAuthentication(AbstractAuthentication):
 
     Usage example:
 
-        # Creating a JWT instance
-        jwt_auth = DefaultJWT()
 
-        # Encoding a token for a user with ID 'user123'
+        jwt_auth = DefaultJWTAuthentication()
+
+
         token = jwt_auth.encode_token('user123')
-        print(f"Generated Token: {token}")
+        print(f"Generated JWTToken: {token}")
 
-        # Decoding a token to verify its validity
+
         try:
             payload = jwt_auth.decode_token(token)
             print(f"Decoded Payload: {payload}")
         except web.HTTPUnauthorized as e:
             print(f"Invalid or expired token: {str(e)}")
 
-        # Authenticating an HTTP request (assuming aiohttp request)
+
         async def some_protected_endpoint(request):
             user_info = await jwt_auth.authenticate_request(request)
             return web.json_response({"message": "Authenticated", "user": user_info})
-
     """
 
     ALGORITHM = "HS256"
     EXPIRATION_DELTA = datetime.timedelta(hours=1)
 
-    def __init__(self) -> None:
+    def __init__(
+            self,
+            algorithm: str = "HS256",
+            expiration_delta: datetime.timedelta = None,
+            user_model: Optional[Type] = None,
+            token_model: Optional[Type] = None
+    ):
         """
-        Initializes the DefaultJWT authentication handler.
+        Initializes the DefaultJWT authentication handler with optional models and configurations.
 
-        The `secret_key` is generated dynamically upon the first access and
-        remains constant for the duration of the application run.
+        Args:
+            algorithm (str): The algorithm used for JWT encoding/decoding.
+            expiration_delta (datetime.timedelta): The time duration after which the token expires.
+            user_model (Optional[Type]): Custom user model.
+            token_model (Optional[Type]): Custom token model.
         """
-        self._secret_key: Optional[str] = None  # Lazily initialized secret key
+        super().__init__(user_model=user_model, token_model=token_model)
+        self.ALGORITHM = algorithm
+        self.EXPIRATION_DELTA = expiration_delta or self.EXPIRATION_DELTA
+        self._secret_key: Optional[str] = None
 
     @property
     def secret_key(self) -> str:
@@ -114,11 +209,11 @@ class DefaultJWTAuthentication(AbstractAuthentication):
             str: A unique secret key for the current application run.
 
         Example:
-            jwt_auth = DefaultJWT()
+            jwt_auth = DefaultJWTAuthentication()
             print(f"Secret Key: {jwt_auth.secret_key}")
         """
         if self._secret_key is None:
-            self._secret_key = os.urandom(32).hex()  # Generate random 32-byte key
+            self._secret_key = os.urandom(32).hex()
         return self._secret_key
 
     def encode_token(self, user_id: str) -> str:
@@ -135,15 +230,22 @@ class DefaultJWTAuthentication(AbstractAuthentication):
             str: The JWT token encoded with the user's ID.
 
         Example:
-            jwt_auth = DefaultJWT()
+            jwt_auth = DefaultJWTAuthentication()
             token = jwt_auth.encode_token('user123')
-            print(f"Generated Token: {token}")
+            print(f"Generated JWTToken: {token}")
         """
         payload = {
             'user_id': user_id,
-            'exp': datetime.datetime.utcnow() + self.EXPIRATION_DELTA
+            'exp': (datetime.datetime.utcnow() + self.EXPIRATION_DELTA).timestamp()
         }
-        return jwt.encode(payload, self.secret_key, algorithm=self.ALGORITHM)
+        token = jwt.encode(payload, self.secret_key, algorithm=self.ALGORITHM)
+
+        with SessionLocal() as session:
+            db_token = self._token_model(user_id=user_id, token=token)
+            session.add(db_token)
+            session.commit()
+
+        return token
 
     def decode_token(self, token: str) -> Union[Dict, None]:
         """
@@ -162,7 +264,7 @@ class DefaultJWTAuthentication(AbstractAuthentication):
             web.HTTPUnauthorized: If the token is expired or invalid.
 
         Example:
-            jwt_auth = DefaultJWT()
+            jwt_auth = DefaultJWTAuthentication()
             try:
                 payload = jwt_auth.decode_token(token)
                 print(f"Decoded Payload: {payload}")
@@ -171,6 +273,12 @@ class DefaultJWTAuthentication(AbstractAuthentication):
         """
         try:
             decoded = jwt.decode(token, self.secret_key, algorithms=[self.ALGORITHM])
+
+            with SessionLocal() as session:
+                db_token = session.query(JWTToken).filter(JWTToken.token == token).first()
+                if not db_token:
+                    raise web.HTTPUnauthorized(reason="Invalid token.")
+
             return decoded
         except jwt.ExpiredSignatureError:
             raise web.HTTPUnauthorized(reason="Token has expired.")
@@ -187,29 +295,31 @@ class DefaultJWTAuthentication(AbstractAuthentication):
         Returns:
             Optional[Dict[str, str]]: A dictionary with user information if the token is valid,
                                        otherwise None.
+
+        Example:
+            jwt_auth = DefaultJWTAuthentication()
+            user_info = jwt_auth.authenticate(token)
+            if user_info:
+                print(f"Authenticated User Info: {user_info}")
+            else:
+                print("Authentication failed.")
         """
         try:
-            payload = jwt.decode(token, self.SECRET_KEY, algorithms=["HS256"])
-            return payload
-        except jwt.ExpiredSignatureError:
-            # Handle expired token
-            return None
-        except jwt.InvalidTokenError:
-            # Handle invalid token
-            return None
+            payload = jwt.decode(token, self.secret_key, algorithms=[self.ALGORITHM])
+            user_id = payload.get('user_id')
 
-    def generate_token(self, user_info: Dict[str, str]) -> str:
-        """
-        Generates a new JWT token for the provided user information.
+            with SessionLocal() as session:
+                user = session.query(self._user_model).filter_by(pk=user_id).first()
 
-        Args:
-            user_info (Dict[str, str]): A dictionary containing user information to be encoded in the token.
+                if user:
+                    return {'user_id': user.id, 'username': user.username}
+        except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
+            raise web.HTTPUnauthorized(reason="Invalid or expired token.")
 
-        Returns:
-            str: The generated JWT token.
-        """
-        payload = {
-            **user_info,
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)  # Token expiry
-        }
-        return jwt.encode(payload, self.SECRET_KEY, algorithm="HS256")
+        return None
+
+    def get_user_model(self):
+        return User
+
+    def get_token_model(self):
+        return JWTToken
